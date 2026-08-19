@@ -36,7 +36,6 @@
         <li><a href="#contact" data-hover>Contact</a></li>
       </ul>
     </nav>
-    <a href="#contact" class="btn btn-ghost nav-cta magnetic" data-hover>Let's Talk</a>
     <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -54,22 +53,28 @@
 <!-- ================= HERO ================= -->
 <section class="hero" id="home">
   <div class="hero-bg-grid" aria-hidden="true"></div>
-  <canvas id="particles" aria-hidden="true"></canvas>
+  <canvas id="orb" aria-hidden="true"></canvas>
+  <div class="hero-scrim" aria-hidden="true"></div>
 
   <div class="float-chip" style="top:20%;left:5%;--fd2:0s"><small>&lt;</small>section class=<small>"future"</small>&gt;</div>
   <div class="float-chip" style="top:32%;right:7%;--fd2:1.4s">$response = $gateway-&gt;charge();</div>
   <div class="float-chip" style="bottom:24%;right:13%;--fd2:2.6s">npm run build <small>// 0 errors</small></div>
 
   <div class="wrap hero-inner">
-    <p class="hero-eyebrow">WEB DEVELOPER &nbsp;•&nbsp; UI/UX DESIGNER</p>
+    <div class="hero-badge"><span class="hero-badge-dot" aria-hidden="true"></span>Web Developer &amp; UI/UX Designer</div>
     <h1 class="hero-name" id="heroName"><span class="row">Tanay</span><span class="row">Samanta</span></h1>
     <p class="hero-headline">I Build Digital Experiences That <span class="grad">Look Beautiful</span> &amp; <span class="grad">Work Seamlessly.</span></p>
     <p class="hero-sub">4–5 years of experience transforming ideas into modern websites, web applications, e-commerce platforms, and interactive digital experiences — from the first pixel to the final API call.</p>
     <div class="hero-actions">
-      <a href="#projects" class="btn btn-solid magnetic" data-hover>View My Work</a>
-      <a href="#contact" class="btn btn-ghost magnetic" data-hover>Let's Talk</a>
+      <!-- <a href="#projects" class="btn btn-solid magnetic" data-hover>View My Work <span class="btn-arrow" aria-hidden="true">→</span></a>
+      <a href="#contact" class="btn btn-ghost magnetic" data-hover>Let's Talk</a> -->
       <!-- TODO: replace # with the actual resume PDF link -->
-      <a href="#" class="link-underline" data-hover>Download Resume ↓</a>
+      <a href="#" class="hero-resume magnetic" data-hover>
+        <span class="hero-resume-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        </span>
+        Download Resume
+      </a>
     </div>
   </div>
   <div class="scroll-hint">SCROLL</div>
