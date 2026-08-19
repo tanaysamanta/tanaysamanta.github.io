@@ -76,7 +76,6 @@
     // matches <Orb hoverIntensity={2} rotateOnHover hue={0} forceHoverState={false} backgroundColor="#000000" />
     var hue = 0, hoverIntensity = 2, rotateOnHover = true, forceHoverState = false;
     var bgColor = [0, 0, 0];
-    var orbScale = 1.55; // >1 shrinks the orb within the canvas
 
     var vertSrc =
       "precision highp float;" +
@@ -214,7 +213,6 @@
     gl.uniform1f(uHue, hue);
     gl.uniform1f(uHoverIntensity, hoverIntensity);
     gl.uniform3f(uBgColor, bgColor[0], bgColor[1], bgColor[2]);
-    gl.uniform1f(uOrbScale, orbScale);
 
     function resize(){
       var dpr = window.devicePixelRatio || 1;
@@ -225,6 +223,8 @@
       orbCanvas.style.height = height + "px";
       gl.viewport(0, 0, orbCanvas.width, orbCanvas.height);
       gl.uniform3f(uIRes, orbCanvas.width, orbCanvas.height, orbCanvas.width / orbCanvas.height);
+      // >1 shrinks the orb within the canvas; smaller viewports get a bigger orb
+      gl.uniform1f(uOrbScale, width < 640 ? 0.95 : width < 880 ? 1.2 : 1.55);
     }
     window.addEventListener("resize", resize, {passive:true});
     resize();
@@ -232,17 +232,30 @@
     var targetHover = 0, hoverVal = 0, currentRot = 0, lastT = 0;
     var rotationSpeed = 0.3;
 
+    function updateHoverFromPoint(clientX, clientY){
+      var r = hero.getBoundingClientRect();
+      var x = clientX - r.left, y = clientY - r.top;
+      var size = Math.min(r.width, r.height);
+      var uvX = ((x - r.width/2) / size) * 2.0;
+      var uvY = ((y - r.height/2) / size) * 2.0;
+      targetHover = Math.sqrt(uvX*uvX + uvY*uvY) < 0.8 ? 1 : 0;
+    }
+
     if (finePointer) {
       hero.addEventListener("mousemove", function(e){
-        var r = hero.getBoundingClientRect();
-        var x = e.clientX - r.left, y = e.clientY - r.top;
-        var size = Math.min(r.width, r.height);
-        var uvX = ((x - r.width/2) / size) * 2.0;
-        var uvY = ((y - r.height/2) / size) * 2.0;
-        targetHover = Math.sqrt(uvX*uvX + uvY*uvY) < 0.8 ? 1 : 0;
+        updateHoverFromPoint(e.clientX, e.clientY);
       }, {passive:true});
       hero.addEventListener("mouseleave", function(){ targetHover = 0; }, {passive:true});
     }
+
+    hero.addEventListener("touchstart", function(e){
+      if (e.touches[0]) updateHoverFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+    }, {passive:true});
+    hero.addEventListener("touchmove", function(e){
+      if (e.touches[0]) updateHoverFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+    }, {passive:true});
+    hero.addEventListener("touchend", function(){ targetHover = 0; }, {passive:true});
+    hero.addEventListener("touchcancel", function(){ targetHover = 0; }, {passive:true});
 
     (function update(t){
       requestAnimationFrame(update);
