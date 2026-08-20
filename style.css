@@ -298,19 +298,41 @@ section{position:relative;z-index:5;padding:clamp(90px,12vw,150px) 0}
 @keyframes hintDrop{0%{transform:scaleY(0)}55%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
 
 /* ---------- about ---------- */
-.about-grid{display:grid;grid-template-columns:1.25fr .9fr;gap:clamp(2.5rem,6vw,5.5rem);align-items:start}
-.about-copy p{color:var(--sage);margin-bottom:1.2rem;font-size:1.03rem}
-.about-copy p b{color:var(--bone);font-weight:500}
+.about-ghost{
+  position:absolute;top:-.15em;right:clamp(20px,4vw,48px);z-index:0;
+  font-family:var(--fd);font-weight:800;font-size:clamp(6rem,15vw,12rem);line-height:1;
+  color:transparent;-webkit-text-stroke:1px rgba(110,231,183,.14);
+  user-select:none;pointer-events:none;
+}
+.about-grid{
+  position:relative;z-index:1;
+  display:grid;grid-template-columns:1.25fr auto .9fr;
+  gap:clamp(1.5rem,3.5vw,3rem);align-items:stretch;
+}
+.about-divider{
+  width:1px;align-self:stretch;
+  background:linear-gradient(180deg,transparent,var(--line) 20%,var(--line) 80%,transparent);
+}
+.about-copy p{margin-bottom:1.2rem;font-size:1.03rem;line-height:1.75}
+.about-copy p b{font-weight:600}
+.scroll-fade-text{
+  background-image:linear-gradient(180deg,
+    var(--bone) 0%, var(--bone) var(--progress,0%),
+    var(--sage) var(--progress,0%), var(--sage) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
 .about-highlights{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .hl-card{
   border:1px solid var(--line);border-radius:16px;padding:1.5rem 1.3rem;
   background:var(--surface);transition:border-color .35s,transform .35s var(--ease),box-shadow .35s;
 }
 .hl-card:hover{border-color:rgba(110,231,183,.4);transform:translateY(-4px);box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.hl-card .svc-icon{width:44px;height:44px;margin-bottom:1rem}
+.hl-card .svc-icon svg{width:20px;height:20px}
 .hl-card h3{font-family:var(--fd);font-weight:700;font-size:1.25rem;margin-bottom:.3rem}
 .hl-card h3 span{color:var(--mint)}
 .hl-card p{font-size:.82rem;color:var(--sage);line-height:1.55}
-@media(max-width:880px){.about-grid{grid-template-columns:1fr}}
+@media(max-width:880px){.about-grid{grid-template-columns:1fr}.about-divider{display:none}}
 @media(max-width:480px){.about-highlights{grid-template-columns:1fr}}
 
 /* ---------- services ---------- */

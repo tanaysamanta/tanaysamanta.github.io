@@ -283,6 +283,33 @@
   }, {threshold:0.12, rootMargin:"0px 0px -40px 0px"});
   document.querySelectorAll(".reveal").forEach(function(el){ io.observe(el); });
 
+  /* ---------- scroll-linked text reveal (gray -> light) ---------- */
+  var fadeEls = document.querySelectorAll(".scroll-fade-text");
+  if (fadeEls.length) {
+    if (reduced) {
+      fadeEls.forEach(function(el){ el.style.setProperty("--progress", "100%"); });
+    } else {
+      var fadeTicking = false;
+      var updateFade = function(){
+        var vh = innerHeight;
+        var start = vh * 0.88, end = vh * 0.4;
+        fadeEls.forEach(function(el){
+          var r = el.getBoundingClientRect();
+          var span = (start - end) + r.height;
+          var p = span > 0 ? (start - r.top) / span : 1;
+          p = Math.max(0, Math.min(1, p));
+          el.style.setProperty("--progress", (p * 100) + "%");
+        });
+        fadeTicking = false;
+      };
+      window.addEventListener("scroll", function(){
+        if (!fadeTicking) { requestAnimationFrame(updateFade); fadeTicking = true; }
+      }, {passive:true});
+      window.addEventListener("resize", updateFade, {passive:true});
+      updateFade();
+    }
+  }
+
   /* ---------- service card spotlight follows cursor ---------- */
   if (finePointer) {
     document.querySelectorAll(".svc-card").forEach(function(card){
