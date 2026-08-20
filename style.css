@@ -74,16 +74,83 @@ button{font-family:inherit;background:none;border:none;color:inherit}
 /* ---------- loader ---------- */
 .loader{
   position:fixed;inset:0;z-index:10000;background:var(--void);
-  display:flex;align-items:center;justify-content:center;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
   transition:opacity .7s var(--ease),visibility .7s;
 }
 .loader.done{opacity:0;visibility:hidden}
-.loader span{
-  font-family:var(--fm);font-size:.85rem;letter-spacing:.4em;color:var(--sage);
-  animation:loaderPulse 1.4s ease-in-out infinite;
+.loader-stars{position:absolute;inset:0;z-index:0}
+.shooting-star{
+  position:absolute;top:0;left:0;z-index:1;width:2px;height:2px;border-radius:50%;
+  background:var(--bone);pointer-events:none;
+  box-shadow:0 0 6px 1px rgba(237,245,240,.9);
+  animation:shootingStar 1.3s linear forwards;
 }
-.loader span b{color:var(--mint);font-weight:500}
-@keyframes loaderPulse{0%,100%{opacity:.4}50%{opacity:1}}
+.shooting-star::before{
+  content:"";position:absolute;top:50%;right:0;width:90px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(237,245,240,.75));
+  transform:translateY(-50%);
+}
+@keyframes shootingStar{
+  0%{opacity:0;transform:translate(0,0)}
+  8%{opacity:1}
+  100%{opacity:0;transform:translate(var(--sx,320px),var(--sy,220px))}
+}
+.loader-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:1.4rem}
+.loader-mark{
+  font-family:var(--fd);font-weight:800;font-size:1.05rem;letter-spacing:.06em;color:var(--sage);
+  opacity:.85;
+}
+.loader-mark em{font-style:normal;color:var(--emerald)}
+
+/* 3D solar-system scene */
+.loader-scene{
+  position:relative;width:225px;height:225px;
+  display:flex;align-items:center;justify-content:center;
+  perspective:700px;
+}
+@media(max-width:480px){.loader-scene{transform:scale(.88)}}
+@media(max-width:420px){.loader-scene{transform:scale(.76)}}
+@media(max-width:360px){.loader-scene{transform:scale(.64)}}
+@media(max-width:320px){.loader-scene{transform:scale(.56)}}
+@media(max-height:480px){.loader-inner{gap:.9rem}.loader-scene{transform:scale(.62)}}
+@media(max-height:380px){.loader-inner{gap:.6rem}.loader-mark{font-size:.9rem}.loader-scene{transform:scale(.5)}}
+.orbit{
+  position:absolute;top:50%;left:50%;margin:0;border-radius:50%;
+  border:1px solid rgba(110,231,183,.16);
+  transform-style:preserve-3d;
+}
+.orbit-1{width:140px;height:140px;margin:-70px 0 0 -70px;transform:rotateX(72deg)}
+.orbit-2{width:180px;height:180px;margin:-90px 0 0 -90px;transform:rotateX(72deg) rotateY(10deg);border-color:rgba(110,231,183,.11)}
+.orbit-3{width:220px;height:220px;margin:-110px 0 0 -110px;transform:rotateX(72deg) rotateY(-12deg);border-color:rgba(110,231,183,.07)}
+.orbit-spin{position:absolute;inset:0;transform-style:preserve-3d;animation:orbitSpin linear infinite}
+.orbit-1 .orbit-spin{animation-duration:4.5s}
+.orbit-2 .orbit-spin{animation-duration:7.5s;animation-direction:reverse}
+.orbit-3 .orbit-spin{animation-duration:10.5s}
+@keyframes orbitSpin{from{transform:rotateZ(0deg)}to{transform:rotateZ(360deg)}}
+.planet{
+  position:absolute;top:-4px;left:50%;width:8px;height:8px;margin-left:-4px;
+  border-radius:50%;background:var(--mint);box-shadow:0 0 10px 3px var(--glow);
+}
+.orbit-2 .planet{background:var(--emerald);width:6px;height:6px;margin-left:-3px}
+.orbit-3 .planet{background:var(--neon);width:7px;height:7px;margin-left:-3.5px}
+.loader-sun{
+  position:relative;z-index:2;width:64px;height:64px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,var(--mint),var(--emerald) 55%,#04140d 100%);
+  box-shadow:0 0 50px 12px rgba(52,211,153,.4),0 0 120px 40px rgba(16,185,129,.14);
+  animation:sunPulse 2.6s ease-in-out infinite;
+}
+@keyframes sunPulse{
+  0%,100%{box-shadow:0 0 50px 12px rgba(52,211,153,.4),0 0 120px 40px rgba(16,185,129,.12)}
+  50%{box-shadow:0 0 66px 18px rgba(52,211,153,.6),0 0 150px 55px rgba(16,185,129,.22)}
+}
+.loader-count{
+  position:absolute;right:clamp(20px,4vw,48px);bottom:clamp(20px,4vw,48px);z-index:3;
+  font-family:var(--fm);font-weight:500;color:var(--bone);
+  font-size:clamp(1.6rem,5vw,2.4rem);letter-spacing:-.02em;line-height:1;
+  font-variant-numeric:tabular-nums;display:flex;align-items:baseline;
+  text-shadow:0 0 40px rgba(52,211,153,.2);
+}
+.loader-count small{font-size:.5em;color:var(--sage);margin-left:.2em}
 
 /* ---------- shared ---------- */
 .wrap{max-width:1200px;margin:0 auto;padding:0 clamp(20px,4vw,48px)}
@@ -547,6 +614,34 @@ footer{
   font-family:var(--fm);font-size:.72rem;color:var(--sage);letter-spacing:.06em;
   display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;
 }
+
+/* ---------- leave-site confirm modal ---------- */
+.leave-modal{
+  position:fixed;inset:0;z-index:500;padding:20px;
+  background:rgba(5,9,8,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:opacity .35s var(--ease),visibility .35s;
+}
+.leave-modal.open{opacity:1;visibility:visible}
+.leave-modal-card{
+  width:100%;max-width:420px;border-radius:22px;padding:clamp(1.6rem,3vw,2.2rem);
+  background:linear-gradient(165deg,rgba(16,185,129,.09),rgba(5,9,8,.92));
+  border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.5);
+  transform:translateY(18px) scale(.96);transition:transform .4s var(--ease);
+}
+.leave-modal.open .leave-modal-card{transform:translateY(0) scale(1)}
+.leave-modal-eyebrow{
+  font-family:var(--fm);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--emerald);margin-bottom:.7rem;
+}
+.leave-modal-title{font-family:var(--fd);font-weight:700;font-size:1.25rem;line-height:1.35;margin-bottom:.8rem}
+.leave-modal-url{
+  font-family:var(--fm);font-size:.82rem;color:var(--mint);word-break:break-all;
+  background:rgba(16,185,129,.06);border:1px solid var(--line);border-radius:10px;
+  padding:.7em .9em;margin-bottom:1.8rem;
+}
+.leave-modal-actions{display:flex;gap:1rem;flex-wrap:wrap}
+.leave-modal-actions .btn{flex:1;justify-content:center}
 
 /* ---------- accessibility & motion ---------- */
 :focus-visible{outline:2px solid var(--mint);outline-offset:3px;border-radius:4px}

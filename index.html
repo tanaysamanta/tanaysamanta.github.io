@@ -15,7 +15,19 @@
 </head>
 <body>
 
-<div class="loader" id="loader"><span>TANAY <b>SAMANTA</b></span></div>
+<div class="loader" id="loader">
+  <canvas class="loader-stars" id="loaderStars" aria-hidden="true"></canvas>
+  <div class="loader-inner">
+    <span class="loader-mark">TANAY<em>.</em></span>
+    <div class="loader-scene">
+      <div class="orbit orbit-1" aria-hidden="true"><div class="orbit-spin"><span class="planet"></span></div></div>
+      <div class="orbit orbit-2" aria-hidden="true"><div class="orbit-spin"><span class="planet"></span></div></div>
+      <div class="orbit orbit-3" aria-hidden="true"><div class="orbit-spin"><span class="planet"></span></div></div>
+      <div class="loader-sun" aria-hidden="true"></div>
+    </div>
+  </div>
+  <div class="loader-count"><span id="loaderPct">0</span><small>%</small></div>
+</div>
 <div class="scroll-progress" id="scrollProgress"></div>
 <div class="noise" aria-hidden="true"></div>
 <div class="glow-follow" id="glowFollow" aria-hidden="true"></div>
@@ -388,6 +400,19 @@
     </div>
   </div>
 </footer>
+
+<!-- ================= LEAVE-SITE CONFIRM MODAL ================= -->
+<div class="leave-modal" id="leaveModal" aria-hidden="true">
+  <div class="leave-modal-card">
+    <p class="leave-modal-eyebrow">Leaving this site</p>
+    <h3 class="leave-modal-title">You're about to visit an external link</h3>
+    <p class="leave-modal-url" id="leaveModalUrl"></p>
+    <div class="leave-modal-actions">
+      <button type="button" class="btn btn-ghost" id="leaveModalCancel" data-hover>Stay here</button>
+      <a href="#" target="_blank" rel="noopener noreferrer" class="btn btn-solid" id="leaveModalConfirm" data-hover>Continue →</a>
+    </div>
+  </div>
+</div>
 
 <script src="index.js"></script>
 </body>

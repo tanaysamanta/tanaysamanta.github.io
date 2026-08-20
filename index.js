@@ -3,12 +3,101 @@
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var finePointer = window.matchMedia("(pointer: fine)").matches;
 
-  /* ---------- loader ---------- */
-  window.addEventListener("load", function(){
-    setTimeout(function(){ document.getElementById("loader").classList.add("done"); }, 350);
-  });
-  // Fallback in case load fires late (e.g. blocked fonts)
-  setTimeout(function(){ document.getElementById("loader").classList.add("done"); }, 2500);
+  /* ---------- loader (fixed 5s solar-system intro) ---------- */
+  (function(){
+    var loaderEl = document.getElementById("loader");
+    var pctEl = document.getElementById("loaderPct");
+    var DURATION = 5000;
+    var starsRunning = true;
+
+    function paint(p){ if (pctEl) pctEl.textContent = Math.round(p); }
+
+    function finish(){
+      loaderEl.classList.add("done");
+      starsRunning = false;
+    }
+
+    /* twinkling starfield background */
+    var starsCanvas = document.getElementById("loaderStars");
+    if (starsCanvas) {
+      var sctx = starsCanvas.getContext("2d");
+      var stars = [], sW, sH;
+      function sizeStars(){
+        sW = starsCanvas.width = innerWidth;
+        sH = starsCanvas.height = innerHeight;
+      }
+      function seedStars(){
+        stars = [];
+        var count = sW < 640 ? 80 : 170;
+        for (var i = 0; i < count; i++){
+          stars.push({
+            x: Math.random() * sW, y: Math.random() * sH,
+            r: Math.random() * 1.3 + 0.3,
+            baseA: Math.random() * 0.55 + 0.25,
+            tw: Math.random() * Math.PI * 2,
+            speed: Math.random() * 0.02 + 0.01
+          });
+        }
+      }
+      sizeStars(); seedStars();
+      window.addEventListener("resize", function(){ sizeStars(); seedStars(); }, {passive:true});
+
+      if (reduced) {
+        sctx.clearRect(0, 0, sW, sH);
+        stars.forEach(function(s){
+          sctx.beginPath();
+          sctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          sctx.fillStyle = "rgba(237,245,240," + s.baseA.toFixed(3) + ")";
+          sctx.fill();
+        });
+      } else {
+        (function drawStars(){
+          if (!starsRunning) return;
+          sctx.clearRect(0, 0, sW, sH);
+          for (var i = 0; i < stars.length; i++){
+            var s = stars[i];
+            s.tw += s.speed;
+            var a = s.baseA * (0.5 + 0.5 * Math.sin(s.tw));
+            sctx.beginPath();
+            sctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            sctx.fillStyle = "rgba(237,245,240," + a.toFixed(3) + ")";
+            sctx.fill();
+          }
+          requestAnimationFrame(drawStars);
+        })();
+
+        /* the occasional shooting star, for extra flair */
+        (function spawnShootingStar(){
+          if (!starsRunning) return;
+          var s = document.createElement("span");
+          s.className = "shooting-star";
+          var x = Math.random() * innerWidth * 0.7;
+          var y = Math.random() * innerHeight * 0.4;
+          var angle = Math.PI / 5 + Math.random() * (Math.PI / 8);
+          var dist = 260 + Math.random() * 200;
+          s.style.left = x + "px";
+          s.style.top = y + "px";
+          s.style.setProperty("--sx", Math.cos(angle) * dist + "px");
+          s.style.setProperty("--sy", Math.sin(angle) * dist + "px");
+          loaderEl.appendChild(s);
+          s.addEventListener("animationend", function(){ s.remove(); });
+          setTimeout(spawnShootingStar, 900 + Math.random() * 1100);
+        })();
+      }
+    }
+
+    if (reduced) { paint(100); finish(); return; }
+
+    var start = null;
+    function tick(ts){
+      if (start === null) start = ts;
+      var p = Math.min(100, ((ts - start) / DURATION) * 100);
+      paint(p);
+      if (p < 100) requestAnimationFrame(tick);
+      else setTimeout(finish, 300);
+    }
+    requestAnimationFrame(tick);
+  })();
 
   /* ---------- custom cursor + mouse glow ---------- */
   if (finePointer && !reduced) {
@@ -361,4 +450,38 @@
     document.getElementById("formNote").classList.add("show");
     form.reset();
   });
+
+  /* ---------- "leaving this site" confirmation for external links ---------- */
+  var leaveModal = document.getElementById("leaveModal");
+  if (leaveModal) {
+    var leaveUrlEl = document.getElementById("leaveModalUrl");
+    var leaveConfirm = document.getElementById("leaveModalConfirm");
+    var leaveCancel = document.getElementById("leaveModalCancel");
+
+    function openLeaveModal(url){
+      leaveUrlEl.textContent = url;
+      leaveConfirm.href = url;
+      leaveModal.classList.add("open");
+      leaveModal.setAttribute("aria-hidden", "false");
+    }
+    function closeLeaveModal(){
+      leaveModal.classList.remove("open");
+      leaveModal.setAttribute("aria-hidden", "true");
+    }
+
+    document.addEventListener("click", function(e){
+      var a = e.target.closest && e.target.closest("a[href^='http']");
+      if (!a || a.hostname === location.hostname) return;
+      e.preventDefault();
+      openLeaveModal(a.href);
+    });
+    leaveCancel.addEventListener("click", closeLeaveModal);
+    leaveConfirm.addEventListener("click", closeLeaveModal);
+    leaveModal.addEventListener("click", function(e){
+      if (e.target === leaveModal) closeLeaveModal();
+    });
+    document.addEventListener("keydown", function(e){
+      if (e.key === "Escape") closeLeaveModal();
+    });
+  }
 })();
